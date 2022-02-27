@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: appserver-deployment
+
+spec:
+  replicas: 4
+
+  selector:
+    matchLabels:
+      server: appserver
+
+  template:
+    metadata:
+      labels:
+        server: appserver
+    spec:
+      containers:
+        - name: appserver
+          image: appserver:v3
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
