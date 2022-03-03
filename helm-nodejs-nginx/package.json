@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:app": "node ./app/server.js",
+    "start:app": "nodemon ./app/server.js",
     "start:userservice": "node ./userservice/server.js",
     "start:all": "npm run start:app & npm run start:userservice"
   },
@@ -12,9 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.26.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.15",
+    "redis": "3.1.2"
   }
 }

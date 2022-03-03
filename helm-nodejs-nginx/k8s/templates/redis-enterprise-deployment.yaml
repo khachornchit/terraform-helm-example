@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{.Values.redis.name}}
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: {{.Values.redis.name}}
+
+  template:
+    metadata:
+      labels:
+        app: {{.Values.redis.name}}
+
+    spec:
+      containers:
+        - name: {{.Values.redis.name}}
+          image: redis:3.0.2
+          ports:
+            - containerPort: 6379
+          securityContext:
+            capabilities:
+              add:
+                - SYS_RESOURCE

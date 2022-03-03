@@ -42,3 +42,6 @@ nginx:
   service:
     name: app-nginx-loadbalancer-service
     type: LoadBalancer
+
+redis:
+  name: redis
