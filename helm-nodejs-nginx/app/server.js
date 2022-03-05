@@ -4,6 +4,10 @@ const morgan = require('morgan');
 const fetch = require("node-fetch");
 const axios = require("axios")
 const redis = require('redis')
+const cors = require('cors');
+const path = require('path');
+const mongoose = require('mongoose');
+const route = require('./controllers/MongoDbController');
 
 const client = redis.createClient({
     host: 'redis',
@@ -12,15 +16,63 @@ const client = redis.createClient({
 });
 
 client.on('connect', () => {
-    console.log('connected to redis');
+    console.log('Redis connected successfully');
 });
 
 const app = express();
 const PORT = 3000;
 const BASE_URL = 'https://api.github.com/users'
 
+const minikube = {
+    appServer: 'app-server-service',
+    mongodb: {
+        username: 'admin',
+        password: 'password',
+        service: 'mongodb-service',
+        port: 27017
+    }
+}
+
+const mongodb = {
+    uri: `mongodb://${minikube.mongodb.username}:${minikube.mongodb.password}@${minikube.mongodb.service}:${minikube.mongodb.port}/admin`,
+    options: {
+        keepAlive: 1,
+        poolSize: 5,
+        promiseLibrary: Promise,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false
+    },
+    optionsBackup: {
+        autoIndex: false,
+        reconnectTries: 30,
+        reconnectInterval: 500,
+        bufferMaxEntries: 0,
+        keepAlive: 1,
+        poolSize: 5,
+        promiseLibrary: Promise,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false
+    },
+}
+
+mongoose.createConnection(mongodb.uri, mongodb.options)
+mongoose.connection.on('connected', (err) => {
+    if (err) {
+        console.log('MongoDB connection error !!!');
+    } else {
+        console.log('MongoDB connected successfully!')
+    }
+});
+
+app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan("[App Server] :method :url :status :response-time ms"));
+app.use('/api', route);
 
 app.get('/ping', (req, res) => {
     return res.json({
@@ -28,11 +80,11 @@ app.get('/ping', (req, res) => {
     });
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/users', async (req, res) => {
     let response;
 
     if (process.env.NODE_ENV === 'production') {
-        response = await fetch('http://user-service-clusterip-service/v1/users');
+        response = await fetch('http://user-service-service/v1/users');
     } else {
         response = await fetch("http://localhost:4000/v1/users");
     }
@@ -44,7 +96,7 @@ app.get('/api/users', async (req, res) => {
     });
 });
 
-app.get('/api/github', async (req, res) => {
+app.get('/github', async (req, res) => {
     const username = req.query.username || 'khachornchit'
     const url = `${BASE_URL}/${username}`
 
@@ -88,7 +140,7 @@ const cache = (req, res, next) => {
 
 app.get('/repository/:username', cache, getRepository)
 
-app.get('/api/redis', async (req, res) => {
+app.get('/redis', async (req, res) => {
     const username = req.query.username || 'khachornchit'
 
     client.get(username, async (error, data) => {

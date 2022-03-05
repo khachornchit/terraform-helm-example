@@ -4,14 +4,14 @@ appserver:
 
   image:
     name: app-server
-    tag: latest
+    tag: v8
     port: 3000
 
   env:
     NODE_ENV: production
 
   service:
-    name: app-server-clusterip-service
+    name: app-server-service
     type: ClusterIP
 
 userservice:
@@ -27,7 +27,7 @@ userservice:
     NODE_ENV: production
 
   service:
-    name: user-service-clusterip-service
+    name: user-service-service
     type: ClusterIP
 
 nginx:
@@ -40,8 +40,24 @@ nginx:
     port: 80
 
   service:
-    name: app-nginx-loadbalancer-service
+    name: app-nginx-service
     type: LoadBalancer
 
 redis:
   name: redis
+
+mongodb:
+  name: mongodb
+
+  user:
+    name: YWRtaW4=
+    backup: dXNlcm5hbWU=
+    password: cGFzc3dvcmQ=
+
+  image:
+    name: mongo
+    tag: 3.6
+
+  service:
+    name: mongodb-service
+
