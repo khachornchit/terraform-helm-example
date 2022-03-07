@@ -4,7 +4,7 @@ appserver:
 
   image:
     name: app-server
-    tag: v8
+    tag: v2
     port: 3000
 
   env:

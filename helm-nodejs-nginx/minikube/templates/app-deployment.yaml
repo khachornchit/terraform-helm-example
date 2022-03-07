@@ -25,3 +25,11 @@ spec:
           env:
             - name: NODE_ENV
               value: {{.Values.appserver.env.NODE_ENV}}
+            - name: TEST1
+              value: Hello Test1 env
+            - name: TEST2
+              value: Hello Test2 env
+
+          envFrom:
+            - configMapRef:
+                name: special-config

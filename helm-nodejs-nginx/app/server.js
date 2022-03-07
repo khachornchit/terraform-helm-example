@@ -168,6 +168,16 @@ app.get('/', (req, res) => {
     return res.send('This page is rendered from the App');
 })
 
+app.get('/env', (req, res) => {
+    return res.send({
+        NODE_ENV: process.env.NODE_ENV,
+        TEST1: process.env.TEST1,
+        TEST2: process.env.TEST2,
+        SPECIAL_LEVEL: process.env.SPECIAL_LEVEL,
+        SPECIAL_TYPE: process.env.SPECIAL_TYPE,
+    });
+})
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
